@@ -1,37 +1,34 @@
 # 🏈 Super Bowl Party Dish Organizer
 
-A web-based drag-and-drop app for organizing dishes at your Super Bowl watch party.
+**Live App**: https://larspnw.github.io/superbowl-party-app/
 
-## Features
-- 🎯 4 categories: Appetizers, Sides, Main Dishes, Desserts
-- 📱 Mobile-first responsive design
-- 🎨 Seahawks theme (navy, neon green, wolf grey)
-- ✨ Drag & drop functionality
-- 👥 Real-time updates via polling
-- 🔗 Shareable link (no login required)
-- 📊 3 items max per category
-
-## Quick Start
-
-### Backend
-```bash
-cd backend
-pip install -r requirements.txt
-python app.py
-```
+## Status: ✅ Ready for Deployment
 
 ### Frontend
-Open `frontend/index.html` in your browser or serve with a simple HTTP server:
-```bash
-cd frontend
-python -m http.server 3000
-# Open http://localhost:3000
-```
+- ✅ Deployed to GitHub Pages
+- ✅ Seahawks themed design
+- ✅ Mobile-responsive
+- ✅ Real-time updates (10-second polling)
 
-## API Endpoints
-- `GET /api/categories` - Get all categories with cards
-- `POST /api/cards` - Create a new card
-- `PUT /api/cards/{id}/category` - Move card to new category
+### Backend
+- ✅ Code pushed to GitHub main branch
+- ✅ CORS configured for GitHub Pages
+- ✅ Flask API with all endpoints
+- ✅ Ready for Render deployment
 
-## Deployment
-Ready for Render deployment - just push to GitHub and deploy!
+## Quick Deploy Steps:
+
+### 1. Deploy Backend to Render
+1. Go to https://render.com
+2. Connect GitHub repo: `larspnw/superbowl-party-app`
+3. Configure:
+   - **Name**: `superbowl-party-api`
+   - **Environment**: Python
+   - **Build Command**: `pip install -r backend/requirements.txt`
+   - **Start Command**: `python backend/app.py`
+
+### 2. Test Your App
+Once deployed, test at: https://larspnw.github.io/superbowl-party-app/
+
+## Share This Link
+Send to your party guests: `https://larspnw.github.io/superbowl-party-app/`

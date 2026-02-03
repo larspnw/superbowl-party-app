@@ -1,40 +1,63 @@
 #!/usr/bin/env python3
-"""Super Bowl Party Dish Organizer Backend with CORS fix"""
+"""Super Bowl Party Dish Organizer Backend - Production Ready"""
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import uuid
 from datetime import datetime
+import os
 
 app = Flask(__name__)
-# Update CORS to allow GitHub Pages
-CORS(app, origins=['https://larspnw.github.io', 'http://localhost:3000', 'http://127.0.0.1:3000'])
+
+# Configure CORS for production
+CORS(app, origins=[
+    'https://larspnw.github.io',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://superbowl-party-api.onrender.com'  # Add the backend itself
+])
 
 # Data storage
 CATEGORIES = [
-    {"id": "appetizers", "name": "Appetizers", "max_items": 3},
-    {"id": "sides", "name": "Sides", "max_items": 3},
-    {"id": "main", "name": "Main Dishes", "max_items": 3},
-    {"id": "desserts", "name": "Desserts", "max_items": 3}
+    {"id": "appetizers", "name": "Appetizers", "max_items": 3, "cards": []},
+    {"id": "sides", "name": "Sides", "max_items": 3, "cards": []},
+    {"id": "main", "name": "Main Dishes", "max_items": 3, "cards": []},
+    {"id": "desserts", "name": "Desserts", "max_items": 3, "cards": []}
 ]
 
-data = {
-    "categories": [{**cat, "cards": []} for cat in CATEGORIES]
-}
+# In-memory storage (for demo - consider Redis/DB for production)
+data = {"categories": CATEGORIES}
 
 @app.route('/')
 def index():
-    return jsonify({"message": "Super Bowl Party Dish Organizer", "version": "1.0.0"})
+    """Health check endpoint"""
+    return jsonify({
+        "message": "Super Bowl Party Dish Organizer API",
+        "version": "1.0.0",
+        "status": "running",
+        "timestamp": datetime.now().isoformat()
+    })
+
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    """Health check for Render"""
+    return jsonify({"status": "healthy", "service": "superbowl-party-api"})
 
 @app.route('/api/categories', methods=['GET'])
 def get_categories():
     """Get all categories with cards"""
-    return jsonify(data["categories"])
+    try:
+        return jsonify(data["categories"])
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/cards', methods=['POST'])
 def create_card():
     """Create a new card"""
     try:
+        if not request.is_json:
+            return jsonify({"error": "Content-Type must be application/json"}), 400
+            
         card_data = request.json
         
         # Validate required fields
@@ -71,4 +94,6 @@ def create_card():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    # Use PORT from environment (Render provides this)
+    port = int(os.environ.get('PORT', 8080))
+    app.run(host='0.0.0.0', port=port, debug=False)
