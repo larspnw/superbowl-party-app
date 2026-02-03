@@ -14,7 +14,9 @@ CORS(app, origins=[
     'https://larspnw.github.io',
     'http://localhost:3000',
     'http://127.0.0.1:3000',
-    'https://superbowl-party-api.onrender.com'  # Add the backend itself
+    'https://superbowl-party-api.onrender.com',
+    'https://superbowl-party-frontend.onrender.com',
+    'https://*.onrender.com'  # Allow all Render subdomains
 ])
 
 # Data storage
