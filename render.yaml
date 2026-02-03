@@ -1,12 +1,19 @@
 services:
   - type: web
+    name: superbowl-party-frontend
+    env: static
+    buildCommand: cd frontend-react && npm install && npm run build
+    staticPublishPath: frontend-react/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://superbowl-party-api.onrender.com/api
+    
+  # Optional: Add the backend service if not already created
+  - type: web
     name: superbowl-party-api
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: python app.py
-    rootDir: backend
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && gunicorn app:app
     envVars:
       - key: FLASK_ENV
         value: production
-      - key: PORT
-        value: 8080
