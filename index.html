@@ -166,6 +166,25 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        .error-message {
+            color: #ff6b6b;
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 10px;
+            margin: 20px;
+        }
+        
+        .retry-btn {
+            background: #69BE28;
+            color: #002244;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -187,6 +206,11 @@
         // Update API URL for production
         const API_BASE = 'https://superbowl-party-api.onrender.com/api';
         
+        // Reduce polling frequency to prevent 429 errors
+        const POLLING_INTERVAL = 10000; // 10 seconds instead of 2
+        
+        let pollingInterval = null;
+        
         async function loadCategories() {
             try {
                 const response = await fetch(`${API_BASE}/categories`);
@@ -194,8 +218,20 @@
                 displayCategories(data);
             } catch (error) {
                 console.error('Error loading categories:', error);
-                document.getElementById('loading').innerHTML = '<p>Error loading data. Please refresh.</p>';
+                displayError(error.message);
             }
+        }
+        
+        function displayError(message) {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="error-message">
+                    <h3>Connection Error</h3>
+                    <p>${message}</p>
+                    <p>The backend might still be deploying. Please try again in a moment.</p>
+                    <button class="retry-btn" onclick="location.reload()">Retry</button>
+                </div>
+            `;
         }
         
         function displayCategories(categories) {
@@ -254,7 +290,8 @@
                     if (response.ok) {
                         loadCategories(); // Refresh
                     } else {
-                        alert("Error adding dish. Category may be full.");
+                        const error = await response.json();
+                        alert(error.error || "Error adding dish. Category may be full.");
                     }
                 } catch (error) {
                     console.error('Error adding card:', error);
@@ -263,11 +300,21 @@
             }
         }
         
-        // Initialize
-        loadCategories();
+        // Initialize with error handling
+        loadCategories().then(() => {
+            // Start polling only after successful initial load
+            pollingInterval = setInterval(loadCategories, POLLING_INTERVAL);
+        }).catch(error => {
+            console.error('Initial load failed:', error);
+            displayError("Failed to connect to server. Please ensure the backend is running.");
+        });
         
-        // Set up polling for real-time updates
-        setInterval(loadCategories, 2000); // Update every 2 seconds
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
+        });
     </script>
 </body>
 </html>
