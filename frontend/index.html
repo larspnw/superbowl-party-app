@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏈 Super Bowl Party Dish Organizer</title>
+    <style>
+        /* Seahawks Theme Colors */
+        :root {
+            --seahawks-navy: #002244;
+            --seahawks-green: #69BE28;
+            --seahawks-grey: #A5ACAF;
+            --seahawks-white: #FFFFFF;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--seahawks-navy) 0%, var(--seahawks-grey) 100%);
+            color: var(--seahawks-white);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(0, 34, 68, 0.8);
+            border-radius: 15px;
+            border: 2px solid #69BE28;
+        }
+        
+        .header h1 {
+            color: #69BE28;
+            font-size: 2.5rem;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .subtitle {
+            color: #A5ACAF;
+            font-size: 1.2rem;
+            margin-top: 10px;
+        }
+        
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        .category {
+            background: rgba(0, 34, 68, 0.9);
+            border: 2px solid #69BE28;
+            border-radius: 15px;
+            padding: 20px;
+            min-height: 400px;
+        }
+        
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #69BE28;
+        }
+        
+        .category-title {
+            color: #69BE28;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .category-count {
+            background: #69BE28;
+            color: #002244;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .cards-container {
+            min-height: 200px;
+            border: 2px dashed #A5ACAF;
+            border-radius: 10px;
+            padding: 10px;
+            background: rgba(165, 172, 175, 0.1);
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #69BE28;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            background: rgba(105, 190, 40, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .card-title {
+            color: #69BE28;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .card-dish {
+            color: #FFFFFF;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .card-dietary {
+            color: #A5ACAF;
+            font-size: 0.9rem;
+        }
+        
+        .add-card-btn {
+            background: #69BE28;
+            color: #002244;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .add-card-btn:hover {
+            background: #5FAF22;
+            transform: translateY(-2px);
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #A5ACAF;
+            border-top: 4px solid #69BE28;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏈 Super Bowl Party Dish Organizer</h1>
+            <p class="subtitle">Drag & Drop Your Dishes to the Right Category</p>
+        </div>
+        
+        <div id="app">
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Loading categories...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Basic JavaScript for the app
+        const API_BASE = 'http://localhost:8080/api';
+        
+        async function loadCategories() {
+            try {
+                const response = await fetch(`${API_BASE}/categories`);
+                const data = await response.json();
+                displayCategories(data);
+            } catch (error) {
+                console.error('Error loading categories:', error);
+                document.getElementById('loading').innerHTML = '<p>Error loading data. Please refresh.</p>';
+            }
+        }
+        
+        function displayCategories(categories) {
+            const app = document.getElementById('app');
+            app.innerHTML = '';
+            
+            const grid = document.createElement('div');
+            grid.className = 'categories-grid';
+            
+            categories.forEach(category => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+                categoryDiv.innerHTML = `
+                    <div class="category-header">
+                        <div class="category-title">${category.name}</div>
+                        <div class="category-count">${category.cards.length}/${category.max_items}</div>
+                    </div>
+                    <div class="cards-container" id="cards-${category.id}">
+                        ${category.cards.map(card => `
+                            <div class="card" data-card-id="${card.id}">
+                                <div class="card-title">${card.couple_name}</div>
+                                <div class="card-dish">${card.dish_name}</div>
+                                <div class="card-dietary">${card.dietary_restrictions}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button class="add-card-btn" onclick="showAddForm('${category.id}')">Add Dish</button>
+                `;
+                grid.appendChild(categoryDiv);
+            });
+            
+            app.appendChild(grid);
+        }
+        
+        async function showAddForm(categoryId) {
+            // Simple form - would be enhanced in real implementation
+            const coupleName = prompt("Couple Name:");
+            const dishName = prompt("Dish Name:");
+            const dietaryRestrictions = prompt("Dietary Restrictions (or 'None'):");
+            
+            if (coupleName && dishName) {
+                try {
+                    const response = await fetch(`${API_BASE}/cards`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            couple_name: coupleName,
+                            dish_name: dishName,
+                            dietary_restrictions: dietaryRestrictions,
+                            category_id: categoryId
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        loadCategories(); // Refresh
+                    } else {
+                        alert("Error adding dish. Category may be full.");
+                    }
+                } catch (error) {
+                    console.error('Error adding card:', error);
+                    alert("Error adding dish.");
+                }
+            }
+        }
+        
+        // Initialize
+        loadCategories();
+    </script>
+</body>
+</html>
+    <script>
+        // Drag & Drop Implementation
+        let draggedElement = null;
+        
+        // Add drag functionality to existing cards
+        function makeCardsDraggable() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.draggable = true;
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+            });
+        }
+        
+        function handleDragStart(e) {
+            draggedElement = e.target;
+            e.target.style.opacity = '0.5';
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', e.target.innerHTML);
+        }
+        
+        function handleDragEnd(e) {
+            e.target.style.opacity = '';
+        }
+        
+        // Make containers droppable
+        function makeContainersDroppable() {
+            const containers = document.querySelectorAll('.cards-container');
+            containers.forEach(container => {
+                container.addEventListener('dragover', handleDragOver);
+                container.addEventListener('drop', handleDrop);
+            });
+        }
+        
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+        
+        async function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            
+            const container = e.target.closest('.cards-container');
+            const categoryId = container.id.replace('cards-', '');
+            const cardId = draggedElement.dataset.cardId;
+            
+            try {
+                const response = await fetch(`/api/cards/${cardId}/category`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        category_id: categoryId
+                    })
+                });
+                
+                if (response.ok) {
+                    loadCategories(); // Refresh
+                } else {
+                    alert("Error moving card. Category may be full.");
+                }
+            } catch (error) {
+                console.error('Error moving card:', error);
+                alert("Error moving card.");
+            }
+            
+            return false;
+        }
+        
+        // Enhanced display function with drag & drop
+        function displayCategories(categories) {
+            const app = document.getElementById('app');
+            app.innerHTML = '';
+            
+            const grid = document.createElement('div');
+            grid.className = 'categories-grid';
+            
+            categories.forEach(category => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+                categoryDiv.innerHTML = `
+                    <div class="category-header">
+                        <div class="category-title">${category.name}</div>
+                        <div class="category-count">${category.cards.length}/${category.max_items}</div>
+                    </div>
+                    <div class="cards-container" id="cards-${category.id}" ondrop="handleDrop(event)" ondragover="handleDragOver(event)">
+                        ${category.cards.map(card => `
+                            <div class="card" data-card-id="${card.id}" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
+                                <div class="card-title">${card.couple_name}</div>
+                                <div class="card-dish">${card.dish_name}</div>
+                                <div class="card-dietary">${card.dietary_restrictions}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button class="add-card-btn" onclick="showAddForm('${category.id}')">Add Dish</button>
+                `;
+                grid.appendChild(categoryDiv);
+            });
+            
+            app.appendChild(grid);
+            
+            // Initialize drag & drop
+            makeContainersDroppable();
+            makeCardsDraggable();
+        }
+        
+        // Initialize
+        loadCategories();
+    </script>
+</body>
+</html>
