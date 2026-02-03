@@ -1,0 +1,44 @@
+.pre-made-couples {
+  background: rgba(105, 190, 40, 0.1);
+  border: 2px solid var(--seahawks-green);
+  border-radius: 15px;
+  padding: 25px;
+  margin: 30px 0;
+}
+
+.pre-made-couples h3 {
+  color: var(--seahawks-green);
+  margin: 0 0 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pre-made-description {
+  color: var(--seahawks-grey);
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.pre-made-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.pre-made-grid > div {
+  position: relative;
+}
+
+.pre-made-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--seahawks-green);
+  color: var(--seahawks-navy);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}

@@ -1,0 +1,63 @@
+.card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--seahawks-green);
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 10px;
+  cursor: grab;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.card:hover {
+  background: rgba(105, 190, 40, 0.2);
+  transform: translateY(-2px);
+}
+
+.card:active {
+  cursor: grabbing;
+}
+
+.card.pre-made {
+  background: rgba(105, 190, 40, 0.15);
+  border: 2px dashed var(--seahawks-green);
+  cursor: pointer;
+}
+
+.card.pre-made:hover {
+  background: rgba(105, 190, 40, 0.25);
+  border-style: solid;
+}
+
+.card-title {
+  color: var(--seahawks-green);
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 1.1rem;
+}
+
+.card-dish {
+  color: var(--seahawks-white);
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.card-dietary {
+  color: var(--seahawks-grey);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.pre-made-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--seahawks-green);
+  color: var(--seahawks-navy);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}

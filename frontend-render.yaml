@@ -1,0 +1,11 @@
+# Frontend deployment configuration for Render
+
+services:
+  - type: web
+    name: superbowl-party-frontend
+    env: static
+    buildCommand: cd frontend-react && npm install && npm run build
+    staticPublishPath: frontend-react/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://superbowl-party-api.onrender.com/api

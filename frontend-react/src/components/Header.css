@@ -1,0 +1,22 @@
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 30px;
+  background: rgba(0, 34, 68, 0.8);
+  border-radius: 15px;
+  border: 2px solid var(--seahawks-green);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.header h1 {
+  color: var(--seahawks-green);
+  font-size: 2.5rem;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.header p {
+  color: var(--seahawks-grey);
+  font-size: 1.2rem;
+  margin-top: 10px;
+}

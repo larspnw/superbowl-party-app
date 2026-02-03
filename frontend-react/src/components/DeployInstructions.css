@@ -1,0 +1,130 @@
+.deploy-instructions {
+  background: rgba(105, 190, 40, 0.1);
+  border: 2px solid var(--seahawks-green);
+  border-radius: 15px;
+  padding: 30px;
+  margin: 30px 0;
+  animation: slideIn 0.5s ease;
+}
+
+.deploy-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.deploy-icon {
+  font-size: 2rem;
+  color: var(--seahawks-green);
+}
+
+.deploy-instructions h3 {
+  color: var(--seahawks-green);
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.deploy-text {
+  color: var(--seahawks-white);
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
+.deploy-steps {
+  margin: 20px 0;
+}
+
+.deploy-steps h4 {
+  color: var(--seahawks-green);
+  margin-bottom: 15px;
+}
+
+.deploy-steps ol {
+  margin: 10px 0;
+  padding-left: 25px;
+}
+
+.deploy-steps li {
+  margin: 12px 0;
+  color: var(--seahawks-white);
+  line-height: 1.6;
+}
+
+.settings-list {
+  margin: 10px 0;
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+.settings-list li {
+  margin: 8px 0;
+  color: var(--seahawks-grey);
+}
+
+.deploy-instructions code {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  color: var(--seahawks-green);
+}
+
+.deploy-help {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(105, 190, 40, 0.3);
+}
+
+.deploy-help p {
+  color: var(--seahawks-grey);
+  margin: 0;
+}
+
+.deploy-help a {
+  color: var(--seahawks-green);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.deploy-help a:hover {
+  text-decoration: underline;
+}
+
+.external-link,
+.github-icon {
+  font-size: 0.9rem;
+}
+
+.retry-btn {
+  background: var(--seahawks-green);
+  color: var(--seahawks-navy);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.retry-btn:hover {
+  background: #5FAF22;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

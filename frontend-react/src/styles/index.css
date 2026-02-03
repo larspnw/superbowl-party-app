@@ -1,0 +1,331 @@
+/* Seahawks Theme Colors */
+:root {
+  --seahawks-navy: #002244;
+  --seahawks-green: #69BE28;
+  --seahawks-grey: #A5ACAF;
+  --seahawks-white: #FFFFFF;
+  --error-red: #ff6b6b;
+  --success-green: #4ecdc4;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, var(--seahawks-navy) 0%, var(--seahawks-grey) 100%);
+  color: var(--seahawks-white);
+  min-height: 100vh;
+}
+
+.app {
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header Styles */
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 30px;
+  background: rgba(0, 34, 68, 0.8);
+  border-radius: 15px;
+  border: 2px solid var(--seahawks-green);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.header h1 {
+  color: var(--seahawks-green);
+  font-size: 2.5rem;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.header p {
+  color: var(--seahawks-grey);
+  font-size: 1.2rem;
+  margin-top: 10px;
+}
+
+/* Status Banner */
+.status-banner {
+  background: rgba(105, 190, 40, 0.2);
+  border: 2px solid var(--seahawks-green);
+  border-radius: 10px;
+  padding: 15px;
+  margin: 20px 0;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.status-banner.error {
+  background: rgba(255, 107, 107, 0.2);
+  border-color: var(--error-red);
+}
+
+.status-banner.loading {
+  background: rgba(165, 172, 175, 0.2);
+  border-color: var(--seahawks-grey);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Deploy Instructions */
+.deploy-instructions {
+  background: rgba(105, 190, 40, 0.1);
+  border: 2px solid var(--seahawks-green);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.deploy-instructions h3 {
+  color: var(--seahawks-green);
+  margin-top: 0;
+}
+
+.deploy-instructions ol {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.deploy-instructions li {
+  margin: 8px 0;
+}
+
+.deploy-instructions code {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+}
+
+.deploy-instructions a {
+  color: var(--seahawks-green);
+  text-decoration: none;
+}
+
+.deploy-instructions a:hover {
+  text-decoration: underline;
+}
+
+.retry-btn {
+  background: var(--seahawks-green);
+  color: var(--seahawks-navy);
+  border: none;
+  border-radius: 5px;
+  padding: 8px 16px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.retry-btn:hover {
+  background: #5FAF22;
+  transform: translateY(-1px);
+}
+
+/* Category Grid */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 40px;
+}
+
+.category {
+  background: rgba(0, 34, 68, 0.9);
+  border: 2px solid var(--seahawks-green);
+  border-radius: 15px;
+  padding: 20px;
+  min-height: 400px;
+  transition: all 0.3s ease;
+}
+
+.category:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--seahawks-green);
+}
+
+.category-title {
+  color: var(--seahawks-green);
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.category-count {
+  background: var(--seahawks-green);
+  color: var(--seahawks-navy);
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+/* Cards */
+.cards-container {
+  min-height: 200px;
+  border: 2px dashed var(--seahawks-grey);
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(165, 172, 175, 0.1);
+  transition: all 0.3s ease;
+}
+
+.cards-container.drag-over {
+  border-color: var(--seahawks-green);
+  background: rgba(105, 190, 40, 0.1);
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--seahawks-green);
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 10px;
+  cursor: grab;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.card:hover {
+  background: rgba(105, 190, 40, 0.2);
+  transform: translateY(-2px);
+}
+
+.card:active {
+  cursor: grabbing;
+}
+
+.card-title {
+  color: var(--seahawks-green);
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 1.1rem;
+}
+
+.card-dish {
+  color: var(--seahawks-white);
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.card-dietary {
+  color: var(--seahawks-grey);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* Buttons */
+.add-card-btn {
+  background: var(--seahawks-green);
+  color: var(--seahawks-navy);
+  border: none;
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 15px;
+  width: 100%;
+}
+
+.add-card-btn:hover {
+  background: #5FAF22;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.add-card-btn:active {
+  transform: translateY(0);
+}
+
+/* Loading Spinner */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--seahawks-grey);
+  border-top: 4px solid var(--seahawks-green);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 2rem;
+  }
+  
+  .categories-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .category {
+    min-height: 350px;
+  }
+  
+  .container {
+    padding: 15px;
+  }
+  
+  .app {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .header p {
+    font-size: 1rem;
+  }
+  
+  .category-title {
+    font-size: 1.3rem;
+  }
+  
+  .card-title {
+    font-size: 1rem;
+  }
+  
+  .card-dish {
+    font-size: 1.1rem;
+  }
+}
