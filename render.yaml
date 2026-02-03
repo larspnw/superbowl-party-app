@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: superbowl-party-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    rootDir: backend
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PORT
+        value: 8080
