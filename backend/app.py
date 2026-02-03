@@ -16,7 +16,7 @@ CORS(app, origins=[
     'http://127.0.0.1:3000',
     'https://superbowl-party-api.onrender.com',
     'https://superbowl-party-frontend.onrender.com',
-    'https://*.onrender.com'  # Allow all Render subdomains
+    'https://superbowl-party-frontend-ot8o.onrender.com'
 ])
 
 # Data storage
