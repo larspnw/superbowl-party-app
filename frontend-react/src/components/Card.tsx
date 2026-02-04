@@ -31,8 +31,8 @@ const Card: React.FC<CardProps> = ({ card, isPreMade = false, onClick }) => {
     >
       <div className="card-title">{card.couple_name}</div>
       <div className="card-dish">{card.dish_name}</div>
-      {card.dietary_restrictions && card.dietary_restrictions !== 'None' && (
-        <div className="card-dietary">{card.dietary_restrictions}</div>
+      {card.dietary_restrictions && card.dietary_restrictions !== 'None' && card.dietary_restrictions !== '' && (
+        <div className="card-dietary">⚠️ {card.dietary_restrictions}</div>
       )}
       {isPreMade && (
         <div className="pre-made-badge">Drag to assign</div>

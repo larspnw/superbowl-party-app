@@ -8,9 +8,10 @@ import StatusBanner from './components/StatusBanner';
 import DeployInstructions from './components/DeployInstructions';
 import PreMadeCouples from './components/PreMadeCouples';
 import CategoryPicker from './components/CategoryPicker';
+import EditCardModal from './components/EditCardModal';
 import './styles/index.css';
 
-const APP_VERSION = '1.0.2';
+const APP_VERSION = '1.0.3';
 
 function App() {
   const [state, setState] = useState<AppState>({
@@ -99,14 +100,14 @@ function App() {
     setPendingCard(card);
   };
 
-  const handleCategorySelect = async (categoryId: string, dishName: string) => {
+  const handleCategorySelect = async (categoryId: string, dishName: string, allergies: string) => {
     if (!pendingCard) return;
     
     try {
       await apiService.createCard({
         couple_name: pendingCard.couple_name,
         dish_name: dishName,
-        dietary_restrictions: pendingCard.dietary_restrictions || '',
+        dietary_restrictions: allergies,
         category_id: categoryId
       });
       await loadCategories();
@@ -118,17 +119,27 @@ function App() {
     }
   };
 
+  const [editingCard, setEditingCard] = useState<Card | null>(null);
+
   const handleCardClick = async (card: Card) => {
-    // Edit existing card
-    const newDishName = prompt(`Edit dish for ${card.couple_name}:`, card.dish_name);
-    if (newDishName && newDishName.trim() && newDishName !== card.dish_name) {
-      try {
-        await apiService.updateCard(card.id, { dish_name: newDishName.trim() });
-        await loadCategories();
-      } catch (error) {
-        console.error('Error updating card:', error);
-        alert(error instanceof Error ? error.message : 'Failed to update dish');
-      }
+    // Open edit modal for existing card
+    setEditingCard(card);
+  };
+
+  const handleCardUpdate = async (dishName: string, allergies: string) => {
+    if (!editingCard) return;
+    
+    try {
+      await apiService.updateCard(editingCard.id, { 
+        dish_name: dishName,
+        dietary_restrictions: allergies 
+      });
+      await loadCategories();
+    } catch (error) {
+      console.error('Error updating card:', error);
+      alert(error instanceof Error ? error.message : 'Failed to update dish');
+    } finally {
+      setEditingCard(null);
     }
   };
 
@@ -195,8 +206,17 @@ function App() {
             <CategoryPicker
               coupleName={pendingCard.couple_name}
               currentDish={pendingCard.dish_name}
+              currentAllergies={pendingCard.dietary_restrictions}
               onSelect={handleCategorySelect}
               onCancel={() => setPendingCard(null)}
+            />
+          )}
+
+          {editingCard && (
+            <EditCardModal
+              card={editingCard}
+              onSave={handleCardUpdate}
+              onCancel={() => setEditingCard(null)}
             />
           )}
         </>

@@ -4,12 +4,14 @@ import './CategoryPicker.css';
 interface CategoryPickerProps {
   coupleName: string;
   currentDish?: string;
-  onSelect: (categoryId: string, dishName: string) => void;
+  currentAllergies?: string;
+  onSelect: (categoryId: string, dishName: string, allergies: string) => void;
   onCancel: () => void;
 }
 
-const CategoryPicker: React.FC<CategoryPickerProps> = ({ coupleName, currentDish, onSelect, onCancel }) => {
+const CategoryPicker: React.FC<CategoryPickerProps> = ({ coupleName, currentDish, currentAllergies, onSelect, onCancel }) => {
   const [dishName, setDishName] = useState(currentDish && currentDish !== 'Click to edit dish' ? currentDish : '');
+  const [allergies, setAllergies] = useState(currentAllergies || '');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const categories = [
@@ -21,7 +23,7 @@ const CategoryPicker: React.FC<CategoryPickerProps> = ({ coupleName, currentDish
 
   const handleSubmit = () => {
     if (selectedCategory && dishName.trim()) {
-      onSelect(selectedCategory, dishName.trim());
+      onSelect(selectedCategory, dishName.trim(), allergies.trim());
     }
   };
 
@@ -38,6 +40,16 @@ const CategoryPicker: React.FC<CategoryPickerProps> = ({ coupleName, currentDish
             onChange={(e) => setDishName(e.target.value)}
             placeholder="Enter dish name..."
             autoFocus
+          />
+        </div>
+
+        <div className="dish-input-section">
+          <label>Food Allergies: <span className="optional">(optional)</span></label>
+          <input
+            type="text"
+            value={allergies}
+            onChange={(e) => setAllergies(e.target.value)}
+            placeholder="e.g. nuts, dairy, gluten..."
           />
         </div>
 
