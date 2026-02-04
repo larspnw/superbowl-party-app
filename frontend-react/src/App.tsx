@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Category, AppState } from './types';
+import { Category, AppState, Card } from './types';
 import { apiService } from './services/api';
 import Header from './components/Header';
 import CategoryGrid from './components/CategoryGrid';
@@ -7,7 +7,10 @@ import AddCardForm from './components/AddCardForm';
 import StatusBanner from './components/StatusBanner';
 import DeployInstructions from './components/DeployInstructions';
 import PreMadeCouples from './components/PreMadeCouples';
+import CategoryPicker from './components/CategoryPicker';
 import './styles/index.css';
+
+const APP_VERSION = '1.0.1';
 
 function App() {
   const [state, setState] = useState<AppState>({
@@ -18,6 +21,7 @@ function App() {
   });
 
   const [showAddForm, setShowAddForm] = useState(false);
+  const [pendingCard, setPendingCard] = useState<Card | null>(null);
 
   // Check backend health
   useEffect(() => {
@@ -91,18 +95,26 @@ function App() {
   };
 
   const handleAssignPreMadeCouple = async (card: Card) => {
-    // This will be called when a pre-made couple is dropped on a category
-    const categoryId = prompt(`Which category for ${card.couple_name}? (appetizers/sides/main/desserts)`);
-    if (categoryId && ['appetizers', 'sides', 'main', 'desserts'].includes(categoryId)) {
-      try {
-        await apiService.createCard({
-          ...card,
-          category_id: categoryId
-        });
-        await loadCategories();
-      } catch (error) {
-        console.error('Error assigning pre-made couple:', error);
-      }
+    // Show category picker modal
+    setPendingCard(card);
+  };
+
+  const handleCategorySelect = async (categoryId: string) => {
+    if (!pendingCard) return;
+    
+    try {
+      await apiService.createCard({
+        couple_name: pendingCard.couple_name,
+        dish_name: pendingCard.dish_name === 'Click to edit dish' ? 'TBD' : pendingCard.dish_name,
+        dietary_restrictions: pendingCard.dietary_restrictions || '',
+        category_id: categoryId
+      });
+      await loadCategories();
+    } catch (error) {
+      console.error('Error assigning pre-made couple:', error);
+      alert(error instanceof Error ? error.message : 'Failed to add dish');
+    } finally {
+      setPendingCard(null);
     }
   };
 
@@ -110,13 +122,9 @@ function App() {
     try {
       // Check if this is a pre-made card (not yet in backend)
       if (cardId.startsWith('pre-') && cardData) {
-        // Create the card in the backend
-        await apiService.createCard({
-          couple_name: cardData.couple_name,
-          dish_name: cardData.dish_name === 'Click to edit dish' ? 'TBD' : cardData.dish_name,
-          dietary_restrictions: cardData.dietary_restrictions || '',
-          category_id: newCategoryId
-        });
+        // Show category picker for pre-made cards dropped on category grid
+        setPendingCard(cardData);
+        return;
       } else {
         // Move existing card
         await apiService.updateCardCategory(cardId, newCategoryId);
@@ -167,8 +175,18 @@ function App() {
               onClose={() => setShowAddForm(false)}
             />
           )}
+
+          {pendingCard && (
+            <CategoryPicker
+              coupleName={pendingCard.couple_name}
+              onSelect={handleCategorySelect}
+              onCancel={() => setPendingCard(null)}
+            />
+          )}
         </>
       )}
+
+      <div className="version-footer">v{APP_VERSION}</div>
     </div>
   );
 }
