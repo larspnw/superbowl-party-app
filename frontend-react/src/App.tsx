@@ -11,7 +11,7 @@ import CategoryPicker from './components/CategoryPicker';
 import EditCardModal from './components/EditCardModal';
 import './styles/index.css';
 
-const APP_VERSION = '1.0.3';
+const APP_VERSION = '1.0.4';
 
 function App() {
   const [state, setState] = useState<AppState>({
@@ -147,9 +147,13 @@ function App() {
     try {
       // Check if this is a pre-made card (not yet in backend)
       if (cardId.startsWith('pre-') && cardData) {
-        // Show category picker for pre-made cards dropped on category grid
-        setPendingCard(cardData);
-        return;
+        // Auto-assign to the drop target category - no picker needed
+        await apiService.createCard({
+          couple_name: cardData.couple_name,
+          dish_name: cardData.dish_name || 'TBD',
+          dietary_restrictions: cardData.dietary_restrictions || '',
+          category_id: newCategoryId
+        });
       } else {
         // Move existing card
         await apiService.updateCardCategory(cardId, newCategoryId);

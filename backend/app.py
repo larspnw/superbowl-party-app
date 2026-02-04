@@ -13,8 +13,11 @@ app = Flask(__name__)
 # Configure CORS for production - allow all Render origins
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=False)
 
-# Persistent storage file
-DATA_FILE = os.environ.get('DATA_FILE', '/tmp/superbowl_data.json')
+# Persistent storage file - try home dir first, fallback to /tmp
+# On Render free tier, /tmp is ephemeral but survives during instance lifetime
+DATA_DIR = os.environ.get('DATA_DIR', os.path.expanduser('~'))
+DATA_FILE = os.path.join(DATA_DIR, 'superbowl_data.json')
+print(f"Data file location: {DATA_FILE}")
 
 # Default categories
 DEFAULT_CATEGORIES = [
@@ -27,9 +30,14 @@ DEFAULT_CATEGORIES = [
 def load_data():
     """Load data from persistent storage"""
     try:
+        print(f"Attempting to load data from: {DATA_FILE}")
         if os.path.exists(DATA_FILE):
             with open(DATA_FILE, 'r') as f:
-                return json.load(f)
+                loaded = json.load(f)
+                print(f"Loaded {sum(len(c.get('cards', [])) for c in loaded.get('categories', []))} cards from storage")
+                return loaded
+        else:
+            print(f"Data file does not exist, using defaults")
     except Exception as e:
         print(f"Error loading data: {e}")
     return {"categories": [dict(c) for c in DEFAULT_CATEGORIES]}
@@ -37,8 +45,11 @@ def load_data():
 def save_data(data):
     """Save data to persistent storage"""
     try:
+        # Ensure directory exists
+        os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
         with open(DATA_FILE, 'w') as f:
             json.dump(data, f, indent=2)
+        print(f"Saved data to {DATA_FILE}")
     except Exception as e:
         print(f"Error saving data: {e}")
 
