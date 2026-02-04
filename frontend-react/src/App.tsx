@@ -106,9 +106,21 @@ function App() {
     }
   };
 
-  const handleDragEnd = async (cardId: string, newCategoryId: string) => {
+  const handleDragEnd = async (cardId: string, newCategoryId: string, cardData?: any) => {
     try {
-      await apiService.updateCardCategory(cardId, newCategoryId);
+      // Check if this is a pre-made card (not yet in backend)
+      if (cardId.startsWith('pre-') && cardData) {
+        // Create the card in the backend
+        await apiService.createCard({
+          couple_name: cardData.couple_name,
+          dish_name: cardData.dish_name === 'Click to edit dish' ? 'TBD' : cardData.dish_name,
+          dietary_restrictions: cardData.dietary_restrictions || '',
+          category_id: newCategoryId
+        });
+      } else {
+        // Move existing card
+        await apiService.updateCardCategory(cardId, newCategoryId);
+      }
       await loadCategories();
     } catch (error) {
       console.error('Error moving card:', error);

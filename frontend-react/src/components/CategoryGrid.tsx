@@ -5,7 +5,7 @@ import './CategoryGrid.css';
 
 interface CategoryGridProps {
   categories: Category[];
-  onDragEnd: (cardId: string, categoryId: string) => void;
+  onDragEnd: (cardId: string, categoryId: string, cardData?: any) => void;
 }
 
 const CategoryGrid: React.FC<CategoryGridProps> = ({ categories, onDragEnd }) => {
@@ -17,8 +17,12 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({ categories, onDragEnd }) =>
   const handleDrop = (e: React.DragEvent, categoryId: string) => {
     e.preventDefault();
     const cardId = e.dataTransfer.getData('text/plain');
+    const cardJson = e.dataTransfer.getData('application/json');
+    
     if (cardId) {
-      onDragEnd(cardId, categoryId);
+      // Pass the full card data for pre-made cards
+      const cardData = cardJson ? JSON.parse(cardJson) : null;
+      onDragEnd(cardId, categoryId, cardData);
     }
   };
 
