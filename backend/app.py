@@ -9,15 +9,8 @@ import os
 
 app = Flask(__name__)
 
-# Configure CORS for production
-CORS(app, origins=[
-    'https://larspnw.github.io',
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'https://superbowl-party-api.onrender.com',
-    'https://superbowl-party-frontend.onrender.com',
-    'https://superbowl-party-frontend-ot8o.onrender.com'
-])
+# Configure CORS for production - allow all Render origins
+CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=False)
 
 # Data storage
 CATEGORIES = [
@@ -92,6 +85,76 @@ def create_card():
         
         category["cards"].append(new_card)
         return jsonify(new_card), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/cards/<card_id>/category', methods=['PUT'])
+def update_card_category(card_id):
+    """Move a card to a different category"""
+    try:
+        if not request.is_json:
+            return jsonify({"error": "Content-Type must be application/json"}), 400
+        
+        req_data = request.json
+        new_category_id = req_data.get('category_id')
+        
+        if not new_category_id:
+            return jsonify({"error": "category_id is required"}), 400
+        
+        # Find the new category
+        new_category = next((cat for cat in data["categories"] if cat["id"] == new_category_id), None)
+        if not new_category:
+            return jsonify({"error": "Category not found"}), 404
+        
+        # Check if new category has space
+        if len(new_category["cards"]) >= new_category["max_items"]:
+            return jsonify({"error": "Category is full (max 3 items)"}), 400
+        
+        # Find and remove card from current category
+        card = None
+        for category in data["categories"]:
+            for c in category["cards"]:
+                if c["id"] == card_id:
+                    card = c
+                    category["cards"].remove(c)
+                    break
+            if card:
+                break
+        
+        # If card not found, it might be a pre-made card being added for the first time
+        if not card:
+            # Create a new card for pre-made couples
+            couple_name = req_data.get('couple_name', card_id.replace('pre-', '').title())
+            dish_name = req_data.get('dish_name', 'TBD')
+            
+            card = {
+                "id": card_id,
+                "couple_name": couple_name,
+                "dish_name": dish_name,
+                "dietary_restrictions": req_data.get('dietary_restrictions', ''),
+                "category_id": new_category_id,
+                "created_at": datetime.now().isoformat()
+            }
+        else:
+            card["category_id"] = new_category_id
+        
+        # Add to new category
+        new_category["cards"].append(card)
+        
+        return jsonify(card), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/cards/<card_id>', methods=['DELETE'])
+def delete_card(card_id):
+    """Delete a card"""
+    try:
+        for category in data["categories"]:
+            for card in category["cards"]:
+                if card["id"] == card_id:
+                    category["cards"].remove(card)
+                    return jsonify({"message": "Card deleted"}), 200
+        return jsonify({"error": "Card not found"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
