@@ -1,14 +1,15 @@
 import React from 'react';
-import { Category } from '../types';
+import { Category, Card as CardType } from '../types';
 import Card from './Card';
 import './CategoryGrid.css';
 
 interface CategoryGridProps {
   categories: Category[];
   onDragEnd: (cardId: string, categoryId: string, cardData?: any) => void;
+  onCardClick?: (card: CardType) => void;
 }
 
-const CategoryGrid: React.FC<CategoryGridProps> = ({ categories, onDragEnd }) => {
+const CategoryGrid: React.FC<CategoryGridProps> = ({ categories, onDragEnd, onCardClick }) => {
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
@@ -48,7 +49,7 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({ categories, onDragEnd }) =>
               </div>
             ) : (
               category.cards.map((card) => (
-                <Card key={card.id} card={card} />
+                <Card key={card.id} card={card} onClick={() => onCardClick?.(card)} />
               ))
             )}
           </div>

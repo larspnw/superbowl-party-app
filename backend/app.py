@@ -6,22 +6,44 @@ from flask_cors import CORS
 import uuid
 from datetime import datetime
 import os
+import json
 
 app = Flask(__name__)
 
 # Configure CORS for production - allow all Render origins
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=False)
 
-# Data storage
-CATEGORIES = [
+# Persistent storage file
+DATA_FILE = os.environ.get('DATA_FILE', '/tmp/superbowl_data.json')
+
+# Default categories
+DEFAULT_CATEGORIES = [
     {"id": "appetizers", "name": "Appetizers", "max_items": 3, "cards": []},
     {"id": "sides", "name": "Sides", "max_items": 3, "cards": []},
     {"id": "main", "name": "Main Dishes", "max_items": 3, "cards": []},
     {"id": "desserts", "name": "Desserts", "max_items": 3, "cards": []}
 ]
 
-# In-memory storage (for demo - consider Redis/DB for production)
-data = {"categories": CATEGORIES}
+def load_data():
+    """Load data from persistent storage"""
+    try:
+        if os.path.exists(DATA_FILE):
+            with open(DATA_FILE, 'r') as f:
+                return json.load(f)
+    except Exception as e:
+        print(f"Error loading data: {e}")
+    return {"categories": [dict(c) for c in DEFAULT_CATEGORIES]}
+
+def save_data(data):
+    """Save data to persistent storage"""
+    try:
+        with open(DATA_FILE, 'w') as f:
+            json.dump(data, f, indent=2)
+    except Exception as e:
+        print(f"Error saving data: {e}")
+
+# Load initial data
+data = load_data()
 
 @app.route('/')
 def index():
@@ -84,7 +106,36 @@ def create_card():
         }
         
         category["cards"].append(new_card)
+        save_data(data)
         return jsonify(new_card), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/cards/<card_id>', methods=['PUT'])
+def update_card(card_id):
+    """Update a card's details"""
+    try:
+        if not request.is_json:
+            return jsonify({"error": "Content-Type must be application/json"}), 400
+        
+        updates = request.json
+        
+        # Find the card
+        for category in data["categories"]:
+            for card in category["cards"]:
+                if card["id"] == card_id:
+                    # Update allowed fields
+                    if 'dish_name' in updates:
+                        card['dish_name'] = updates['dish_name'].strip()
+                    if 'dietary_restrictions' in updates:
+                        card['dietary_restrictions'] = updates['dietary_restrictions'].strip()
+                    if 'couple_name' in updates:
+                        card['couple_name'] = updates['couple_name'].strip()
+                    
+                    save_data(data)
+                    return jsonify(card), 200
+        
+        return jsonify({"error": "Card not found"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -140,6 +191,7 @@ def update_card_category(card_id):
         
         # Add to new category
         new_category["cards"].append(card)
+        save_data(data)
         
         return jsonify(card), 200
     except Exception as e:
@@ -153,6 +205,7 @@ def delete_card(card_id):
             for card in category["cards"]:
                 if card["id"] == card_id:
                     category["cards"].remove(card)
+                    save_data(data)
                     return jsonify({"message": "Card deleted"}), 200
         return jsonify({"error": "Card not found"}), 404
     except Exception as e:

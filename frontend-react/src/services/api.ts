@@ -62,6 +62,11 @@ export const apiService = {
     return response.data;
   },
 
+  async updateCard(cardId: string, updates: Partial<CardData>): Promise<Card> {
+    const response = await api.put<Card>(`/cards/${cardId}`, updates);
+    return response.data;
+  },
+
   async healthCheck(): Promise<boolean> {
     try {
       const response = await api.get('/health');

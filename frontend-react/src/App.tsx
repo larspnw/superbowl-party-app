@@ -10,7 +10,7 @@ import PreMadeCouples from './components/PreMadeCouples';
 import CategoryPicker from './components/CategoryPicker';
 import './styles/index.css';
 
-const APP_VERSION = '1.0.1';
+const APP_VERSION = '1.0.2';
 
 function App() {
   const [state, setState] = useState<AppState>({
@@ -99,13 +99,13 @@ function App() {
     setPendingCard(card);
   };
 
-  const handleCategorySelect = async (categoryId: string) => {
+  const handleCategorySelect = async (categoryId: string, dishName: string) => {
     if (!pendingCard) return;
     
     try {
       await apiService.createCard({
         couple_name: pendingCard.couple_name,
-        dish_name: pendingCard.dish_name === 'Click to edit dish' ? 'TBD' : pendingCard.dish_name,
+        dish_name: dishName,
         dietary_restrictions: pendingCard.dietary_restrictions || '',
         category_id: categoryId
       });
@@ -115,6 +115,20 @@ function App() {
       alert(error instanceof Error ? error.message : 'Failed to add dish');
     } finally {
       setPendingCard(null);
+    }
+  };
+
+  const handleCardClick = async (card: Card) => {
+    // Edit existing card
+    const newDishName = prompt(`Edit dish for ${card.couple_name}:`, card.dish_name);
+    if (newDishName && newDishName.trim() && newDishName !== card.dish_name) {
+      try {
+        await apiService.updateCard(card.id, { dish_name: newDishName.trim() });
+        await loadCategories();
+      } catch (error) {
+        console.error('Error updating card:', error);
+        alert(error instanceof Error ? error.message : 'Failed to update dish');
+      }
     }
   };
 
@@ -157,6 +171,7 @@ function App() {
           <CategoryGrid 
             categories={state.categories}
             onDragEnd={handleDragEnd}
+            onCardClick={handleCardClick}
           />
           
           <div className="add-button-container">
@@ -179,6 +194,7 @@ function App() {
           {pendingCard && (
             <CategoryPicker
               coupleName={pendingCard.couple_name}
+              currentDish={pendingCard.dish_name}
               onSelect={handleCategorySelect}
               onCancel={() => setPendingCard(null)}
             />

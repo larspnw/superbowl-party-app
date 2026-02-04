@@ -15,7 +15,7 @@
   background: white;
   border-radius: 16px;
   padding: 24px;
-  max-width: 320px;
+  max-width: 360px;
   width: 90%;
   text-align: center;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -27,40 +27,107 @@
   font-size: 1.25rem;
 }
 
+.dish-input-section {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.dish-input-section label {
+  display: block;
+  color: #002244;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.dish-input-section input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #002244;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.dish-input-section input:focus {
+  outline: none;
+  border-color: #69BE28;
+}
+
+.category-label {
+  color: #002244;
+  font-weight: bold;
+  margin-bottom: 12px;
+  text-align: left;
+}
+
 .category-picker-options {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
 .category-picker-btn {
   background: #002244;
   color: white;
   border: none;
-  padding: 16px 24px;
+  padding: 14px 12px;
   border-radius: 8px;
-  font-size: 1.1rem;
+  font-size: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .category-picker-btn:hover {
-  background: #69BE28;
+  background: #003366;
   transform: scale(1.02);
+}
+
+.category-picker-btn.selected {
+  background: #69BE28;
+  color: #002244;
 }
 
 .category-picker-btn:active {
   transform: scale(0.98);
 }
 
+.picker-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.category-picker-submit {
+  flex: 1;
+  background: #69BE28;
+  color: #002244;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-picker-submit:hover:not(:disabled) {
+  background: #5FAF22;
+}
+
+.category-picker-submit:disabled {
+  background: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
 .category-picker-cancel {
-  margin-top: 16px;
+  flex: 1;
   background: transparent;
   color: #666;
   border: 1px solid #ccc;
-  padding: 10px 20px;
+  padding: 12px 20px;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 1rem;
   cursor: pointer;
 }
 
